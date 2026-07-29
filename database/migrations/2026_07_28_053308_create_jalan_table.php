@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('jalan', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('kelurahan_id')->constrained('kelurahan');
+            $table->string('nama_jalan',150);
+            $table->integer('panjang_meter');
+            $table->decimal('lebar_meter', 5, 2);
+            $table->string('jenis_permukaan', 30);
+            $table->string('kondisi', 30);
+            $table->integer('tahun_pendataan');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('kecamatan', function (Blueprint $table) {
             $table->id();
+            $table->string('nama_kecamatan', 100)->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

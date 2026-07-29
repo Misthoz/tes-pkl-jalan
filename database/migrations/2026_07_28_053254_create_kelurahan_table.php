@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('kelurahan', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('kecamatan_id')->constrained('kecamatan');
+            $table->string('nama_kelurahan',100);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
