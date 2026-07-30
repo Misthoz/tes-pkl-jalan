@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('jalan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('kelurahan_id')->constrained('kelurahan');
+            $table->foreignId('kelurahan_id')->constrained('kelurahan')->restrictOnDelete();
             $table->string('nama_jalan',150);
             $table->integer('panjang_meter');
             $table->decimal('lebar_meter', 5, 2);

@@ -12,7 +12,7 @@ class kecamatanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,7 @@ class kecamatanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama_kecamatan' => 'required|string|max:100|unique:kecamatan,nama_kecamatan,' . $this->route('kecamatan')?->id,
         ];
     }
 }

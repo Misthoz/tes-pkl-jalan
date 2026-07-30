@@ -12,7 +12,7 @@ class kelurahanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class kelurahanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'kecamatan_id' => 'required|exists:kecamatan,id',
+            'nama_kelurahan' => 'required|string|max:100',
         ];
     }
 }
