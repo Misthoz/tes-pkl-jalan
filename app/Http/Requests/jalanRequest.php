@@ -24,7 +24,7 @@ class jalanRequest extends FormRequest
     {
         return [
             'kelurahan_id' => 'required|exists:kelurahan,id',
-            'nama_jalan' => 'required|string|max:150',
+            'nama_jalan' => 'required|string|max:150|unique:jalan,nama_jalan,' . $this->route('jalan')?->id,
             'panjang_meter' => 'required|integer|min:1',
             'lebar_meter' => 'required|numeric|min:0.01',
             'jenis_permukaan' => 'required|in:Aspal,Beton,Paving,Tanah',

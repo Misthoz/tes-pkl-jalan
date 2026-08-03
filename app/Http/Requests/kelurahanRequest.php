@@ -24,7 +24,7 @@ class kelurahanRequest extends FormRequest
     {
         return [
             'kecamatan_id' => 'required|exists:kecamatan,id',
-            'nama_kelurahan' => 'required|string|max:100',
+            'nama_kelurahan' => 'required|string|max:100|unique:kelurahan,nama_kelurahan,' . $this->route('kelurahan')?->id,
         ];
     }
 }
