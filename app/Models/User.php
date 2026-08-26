@@ -30,17 +30,11 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Cek apakah user adalah Admin.
-     */
     public function isAdmin(): bool
     {
         return $this->role === 'Admin';
     }
 
-    /**
-     * Cek apakah user adalah Petugas.
-     */
     public function isPetugas(): bool
     {
         return $this->role === 'Petugas';

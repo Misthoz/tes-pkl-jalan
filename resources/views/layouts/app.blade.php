@@ -85,14 +85,6 @@
         </div>
     @endif
 
-    {{-- Jaring pengaman untuk error validasi. Tanpa ini, halaman yang lupa
-         memasang @error di form-nya akan menerima redirect back tanpa pesan
-         apa pun -- terlihat sama seperti berhasil.
-
-         Sengaja hanya membaca bag 'default': halaman yang memakai named error
-         bag (lihat jalan/show.blade.php) sudah menampilkan pesannya sendiri di
-         dalam form masing-masing, jadi menampilkan semua bag di sini hanya
-         menghasilkan pesan ganda. --}}
     @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Terjadi kesalahan pada input Anda.</strong>

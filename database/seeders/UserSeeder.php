@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Seed akun default Admin dan Petugas.
-     */
     public function run(): void
     {
         User::create([

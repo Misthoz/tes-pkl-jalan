@@ -8,17 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  ...$roles
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        // 1. Cek apakah user sudah login
         if (!$request->user()) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);
@@ -27,12 +18,10 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        // 2. Jika tidak ada parameter role yang ditentukan, izinkan request lewat
         if (empty($roles)) {
             return $next($request);
         }
 
-        // 3. Normalisasi daftar role yang diperbolehkan (support format: 'Admin', 'Petugas' atau 'Admin|Petugas' atau 'Admin,Petugas')
         $allowedRoles = [];
         foreach ($roles as $role) {
             foreach (preg_split('/[,|]/', $role) as $r) {
@@ -43,7 +32,6 @@ class RoleMiddleware
             }
         }
 
-        // 4. Cek role user saat ini (case-insensitive)
         $userRole = strtolower(trim((string) $request->user()->role));
 
         if (!in_array($userRole, $allowedRoles, true)) {
