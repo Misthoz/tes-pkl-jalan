@@ -2,6 +2,13 @@
 
 @section('title', 'Edit Data Jalan')
 
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: 350px; border-radius: 8px; border: 1px solid #dee2e6; }
+</style>
+@endsection
+
 @section('content')
 <div class="card shadow-sm">
     <div class="card-header bg-white">
@@ -24,7 +31,7 @@
                         <option value="">Pilih Kelurahan</option>
                         @foreach ($kelurahan as $k)
                             <option value="{{ $k->id }}" {{ old('kelurahan_id', $jalan->kelurahan_id) == $k->id ? 'selected' : '' }}>
-                                {{ $k->nama_kelurahan }} (Kec. {{ $k->kecamatan->nama_kecamatan }})
+                                {{ $k->nama_kelurahan }} (Kec. {{ $k->kecamatan->nama_kecamatan ?? '-' }})
                             </option>
                         @endforeach
                     </select>
@@ -35,12 +42,12 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Panjang (Meter) <span class="text-danger">*</span></label>
-                    <input type="number" name="panjang_meter" class="form-control @error('panjang_meter') is-invalid @enderror" value="{{ old('panjang_meter', $jalan->panjang_meter) }}" required min="1">
+                    <input type="number" name="panjang_meter" class="form-control @error('panjang_meter') is-invalid @enderror" value="{{ old('panjang_meter', $jalan->panjang_meter) }}" required min="1" max="2147483647">
                     @error('panjang_meter') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Lebar (Meter) <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" name="lebar_meter" class="form-control @error('lebar_meter') is-invalid @enderror" value="{{ old('lebar_meter', $jalan->lebar_meter) }}" required min="0.01">
+                    <input type="number" step="0.01" name="lebar_meter" class="form-control @error('lebar_meter') is-invalid @enderror" value="{{ old('lebar_meter', $jalan->lebar_meter) }}" required min="0.01" max="999.99">
                     @error('lebar_meter') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
             </div>
@@ -76,8 +83,29 @@
             
             <div class="mb-3">
                 <label class="form-label">Keterangan</label>
-                <textarea name="keterangan" rows="3" class="form-control @error('keterangan') is-invalid @enderror">{{ old('keterangan', $jalan->keterangan) }}</textarea>
+                <textarea name="keterangan" rows="3" maxlength="16383" class="form-control @error('keterangan') is-invalid @enderror">{{ old('keterangan', $jalan->keterangan) }}</textarea>
                 @error('keterangan') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Lokasi di Peta <small class="text-muted">(Klik pada peta untuk mengubah lokasi)</small></h6>
+                </div>
+                <div class="card-body">
+                    <div id="map"></div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Latitude</label>
+                            <input type="text" name="latitude" id="latitude" class="form-control @error('latitude') is-invalid @enderror" value="{{ old('latitude', $jalan->latitude) }}" placeholder="Contoh: -0.5022" readonly>
+                            @error('latitude') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Longitude</label>
+                            <input type="text" name="longitude" id="longitude" class="form-control @error('longitude') is-invalid @enderror" value="{{ old('longitude', $jalan->longitude) }}" placeholder="Contoh: 117.1536" readonly>
+                            @error('longitude') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="mt-4">
@@ -87,4 +115,47 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+@php
+    $latValue = old('latitude', $jalan->latitude);
+    $lngValue = old('longitude', $jalan->longitude);
+
+    $hasCoords = is_numeric($latValue) && is_numeric($lngValue);
+
+    $existingLat = $hasCoords ? (float) $latValue : -0.5022;
+    $existingLng = $hasCoords ? (float) $lngValue : 117.1536;
+@endphp
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const existingLat = {{ $existingLat }};
+    const existingLng = {{ $existingLng }};
+    const hasCoords = {{ $hasCoords ? 'true' : 'false' }};
+
+    const map = L.map('map').setView([existingLat, existingLng], hasCoords ? 15 : 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker = null;
+
+    if (hasCoords) {
+        marker = L.marker([existingLat, existingLng]).addTo(map);
+    }
+
+    map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(7);
+        const lng = e.latlng.lng.toFixed(7);
+
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng).addTo(map);
+        }
+    });
+</script>
 @endsection
