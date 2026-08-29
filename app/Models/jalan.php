@@ -19,11 +19,23 @@ class jalan extends Model
         'jenis_permukaan',
         'kondisi',
         'tahun_pendataan',
-        'keterangan'
+        'keterangan',
+        'latitude',
+        'longitude'
     ];
 
     public function kelurahan()
     {
         return $this->belongsTo(kelurahan::class);
+    }
+
+    public function dokumentasi()
+    {
+        return $this->hasMany(DokumentasiJalan::class);
+    }
+
+    public function riwayatKondisi()
+    {
+        return $this->hasMany(RiwayatKondisi::class);
     }
 }
