@@ -24,7 +24,7 @@
                         <tr>
                             <td>{{ $data->firstItem() + $loop->index }}</td>
                             <td>{{ $item->nama_kelurahan }}</td>
-                            <td>{{ $item->kecamatan->nama_kecamatan }}</td>
+                            <td>{{ $item->kecamatan->nama_kecamatan ?? '-' }}</td>
                             <td>
                                 <a href="{{ route('kelurahan.show', $item->id) }}" class="btn btn-info btn-sm">Detail</a>
                                 <a href="{{ route('kelurahan.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>

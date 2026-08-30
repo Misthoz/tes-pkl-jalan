@@ -33,9 +33,6 @@ class UserRequest extends FormRequest
         ];
     }
 
-    /**
-     * Pesan validasi dalam Bahasa Indonesia.
-     */
     public function messages(): array
     {
         return [

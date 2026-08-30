@@ -26,4 +26,13 @@ class kecamatanRequest extends FormRequest
             'nama_kecamatan' => 'required|string|max:100|unique:kecamatan,nama_kecamatan,' . $this->route('kecamatan')?->id,
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'nama_kecamatan.required' => 'Nama kecamatan wajib diisi.',
+            'nama_kecamatan.unique' => 'Nama kecamatan sudah terdaftar.',
+            'nama_kecamatan.max' => 'Nama kecamatan maksimal 100 karakter.',
+        ];
+    }
 }

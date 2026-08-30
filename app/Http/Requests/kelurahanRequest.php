@@ -23,8 +23,19 @@ class kelurahanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kecamatan_id' => 'required|exists:kecamatan,id',
+            'kecamatan_id' => 'required|exists:kecamatan,id,deleted_at,NULL',
             'nama_kelurahan' => 'required|string|max:100|unique:kelurahan,nama_kelurahan,' . $this->route('kelurahan')?->id,
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'kecamatan_id.required' => 'Kecamatan wajib dipilih.',
+            'kecamatan_id.exists' => 'Kecamatan yang dipilih tidak valid atau sudah dipindahkan ke trash.',
+            'nama_kelurahan.required' => 'Nama kelurahan wajib diisi.',
+            'nama_kelurahan.unique' => 'Nama kelurahan sudah terdaftar.',
+            'nama_kelurahan.max' => 'Nama kelurahan maksimal 100 karakter.',
         ];
     }
 }

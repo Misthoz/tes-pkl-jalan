@@ -39,12 +39,6 @@
                                 <a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm">Detail</a>
                                 <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm">Edit</a>
                                 @if($user->id !== auth()->id())
-                                    {{-- Nama pengguna dititipkan lewat data-name, BUKAN disisipkan ke
-                                         dalam string JavaScript di onclick. Di dalam nilai atribut HTML,
-                                         hasil escape Blade (&#039;) tetap utuh sebagai satu karakter data
-                                         dan dibaca apa adanya oleh dataset.name -- tidak pernah diparse
-                                         sebagai kode. Konfirmasinya ditangani listener di @section('scripts')
-                                         di bawah. --}}
                                     <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline js-form-hapus-pengguna" data-name="{{ $user->name }}">
                                         @csrf
                                         @method('DELETE')
@@ -70,26 +64,8 @@
 
 @section('scripts')
 <script>
-    // Konfirmasi hapus pengguna.
-    //
-    // Sebelumnya ini berupa inline onclick="return confirm('... nama user ...')"
-    // dengan nama disisipkan langsung lewat echo Blade. Pola itu rusak karena
-    // nilai atribut event handler diproses DUA kali: browser mendekode entitas
-    // HTML lebih dulu, baru menyerahkan hasilnya ke parser JavaScript. Jadi
-    // &#039; yang dihasilkan Blade berubah kembali menjadi tanda kutip tunggal
-    // sebelum JS diparse, dan nama seperti O'Brien menutup string JS di tengah
-    // jalan -- SyntaxError. Handler-nya gagal dimuat, onclick tidak mengembalikan
-    // apa pun, submit TIDAK dibatalkan, dan akun langsung terhapus tanpa dialog
-    // konfirmasi sama sekali.
-    //
-    // Di sini namanya dibaca lewat dataset (data-name pada <form>). Nilai atribut
-    // biasa hanya didekode SEKALI oleh parser HTML dan tidak pernah masuk parser
-    // JavaScript, jadi karakter apa pun -- kutip tunggal, kutip ganda, < , > --
-    // aman.
     document.querySelectorAll('.js-form-hapus-pengguna').forEach(function (form) {
         form.addEventListener('submit', function (e) {
-            // Fallback ke teks generik supaya dialog tetap masuk akal kalau
-            // data-name kosong; jangan sampai muncul "pengguna ?" tanpa konteks.
             const nama = form.dataset.name || 'ini';
 
             if (!confirm('Yakin ingin menghapus pengguna ' + nama + '?')) {

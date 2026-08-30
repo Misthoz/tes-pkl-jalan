@@ -14,7 +14,14 @@ class KecamatanSeeder extends Seeder
     {
         $kecamatans = [
             ['nama_kecamatan' => 'Samarinda Kota'],
+            ['nama_kecamatan' => 'Samarinda Ulu'],
+            ['nama_kecamatan' => 'Samarinda Ilir'],
+            ['nama_kecamatan' => 'Samarinda Utara'],
             ['nama_kecamatan' => 'Samarinda Seberang'],
+            ['nama_kecamatan' => 'Sungai Kunjang'],
+            ['nama_kecamatan' => 'Sungai Pinang'],
+            ['nama_kecamatan' => 'Sambutan'],
+            ['nama_kecamatan' => 'Loa Janan Ilir'],
             ['nama_kecamatan' => 'Palaran'],
         ];
 

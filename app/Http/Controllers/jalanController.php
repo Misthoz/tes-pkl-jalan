@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\jalanRequest;
 use App\Models\jalan;
+use App\Models\kecamatan;
 use App\Models\kelurahan;
 use Illuminate\Http\Request;
 
@@ -14,31 +15,75 @@ class jalanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = jalan::with('kelurahan.kecamatan')->latest();
+        $query = jalan::with('kelurahan.kecamatan');
 
         if ($request->filled('search')) {
             $query->where('nama_jalan', 'like', '%' . $request->search . '%');
         }
 
         if ($request->filled('kondisi') && $request->kondisi != 'Semua') {
-            $query->where('kondisi', $request->kondisi);
+            if (in_array($request->kondisi, ['Baik', 'Rusak Ringan', 'Rusak Berat'])) {
+                $query->where('kondisi', $request->kondisi);
+            }
         }
 
         if ($request->filled('jenis_permukaan') && $request->jenis_permukaan != 'Semua') {
-            $query->where('jenis_permukaan', $request->jenis_permukaan);
+            if (in_array($request->jenis_permukaan, ['Aspal', 'Beton', 'Paving', 'Tanah'])) {
+                $query->where('jenis_permukaan', $request->jenis_permukaan);
+            }
         }
+
+        if ($request->filled('kecamatan_id')) {
+            $query->whereHas('kelurahan', function ($q) use ($request) {
+                $q->where('kecamatan_id', $request->kecamatan_id);
+            });
+        }
+
+        if ($request->filled('kelurahan_id')) {
+            $query->where('kelurahan_id', $request->kelurahan_id);
+        }
+
+        if ($request->filled('tahun_pendataan')) {
+            $tahun = (int) $request->tahun_pendataan;
+            if ($tahun >= 2000 && $tahun <= date('Y')) {
+                $query->where('tahun_pendataan', $tahun);
+            }
+        }
+
+        if ($request->filled('panjang_min')) {
+            $query->where('panjang_meter', '>=', (int) $request->panjang_min);
+        }
+        if ($request->filled('panjang_max')) {
+            $query->where('panjang_meter', '<=', (int) $request->panjang_max);
+        }
+
+        $summary = [
+            'total_jalan' => (clone $query)->count(),
+            'kondisi_baik' => (clone $query)->where('kondisi', 'Baik')->count(),
+            'kondisi_rusak_ringan' => (clone $query)->where('kondisi', 'Rusak Ringan')->count(),
+            'kondisi_rusak_berat' => (clone $query)->where('kondisi', 'Rusak Berat')->count(),
+            'total_panjang' => (clone $query)->sum('panjang_meter'),
+        ];
+
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = $request->get('sort_dir', 'desc');
+
+        $allowedSorts = ['nama_jalan', 'panjang_meter', 'kondisi', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        $query->orderBy($sortBy, $sortDir);
 
         $data = $query->paginate(10)->withQueryString();
 
-        $summary = [
-            'total_jalan' => jalan::count(),
-            'kondisi_baik' => jalan::where('kondisi', 'Baik')->count(),
-            'kondisi_rusak_ringan' => jalan::where('kondisi', 'Rusak Ringan')->count(),
-            'kondisi_rusak_berat' => jalan::where('kondisi', 'Rusak Berat')->count(),
-            'total_panjang' => jalan::sum('panjang_meter')
-        ];
+        $kecamatanList = kecamatan::with('kelurahan')->orderBy('nama_kecamatan')->get();
+        $tahunList = jalan::select('tahun_pendataan')->distinct()->orderBy('tahun_pendataan', 'desc')->pluck('tahun_pendataan');
 
-        return view('jalan.index', compact('data', 'summary'));
+        return view('jalan.index', compact('data', 'summary', 'kecamatanList', 'tahunList'));
     }
 
     /**
@@ -68,7 +113,7 @@ class jalanController extends Controller
      */
     public function show(string $id)
     {
-        $jalan = jalan::with('kelurahan.kecamatan')->findOrFail($id);
+        $jalan = jalan::with(['kelurahan.kecamatan', 'dokumentasi', 'riwayatKondisi.user'])->findOrFail($id);
         return view('jalan.show', compact('jalan'));
     }
 

@@ -72,10 +72,10 @@ class kecamatanController extends Controller
      */
     public function destroy(kecamatan $kecamatan)
     {
-        if ($kecamatan->kelurahan()->count() > 0) {
+        if ($kecamatan->kelurahan()->withTrashed()->count() > 0) {
             return redirect()
                 ->route('kecamatan.index')
-                ->with('error', 'data tidak bisa dihapus karena masih memiliki data kelurahan');
+                ->with('error', 'data tidak bisa dihapus karena masih memiliki data kelurahan (termasuk yang ada di trash)');
         }
 
         $kecamatan->delete();

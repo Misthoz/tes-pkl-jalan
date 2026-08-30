@@ -27,12 +27,42 @@ php artisan key:generate
 ```bash
 php artisan migrate:fresh --seed
 ```
+7. buat storage link dengan mengetik:
+```bash
+php artisan storage:link
+```
+supaya foto dokumentasi bisa tampil
+
 ## cara run project :
 buka terminal ketik:
 ```bash
 php artisan serve
 ```
 setelah itu buka browser dan buka link `http://localhost:8000`.
+
+## Akun Demo
+setelah menjalankan seeder, akun dummy berikut sudah otomatis tersedia:
+* role admin
+    - username: admin
+    - password: password
+* role petugas
+    - username: petugas
+    - password: password    
+
+## Hak Akses Role
+
+| Fitur | Admin | Petugas |
+|-------|:-----:|:-------:|
+| Dashboard | ✅ | ✅ | 
+| CRUD Jalan | ✅ | ✅ |
+| CRUD Kecamatan & Kelurahan | ✅ | ✅ |
+| Peta Jalan | ✅ | ✅ |
+| Dokumentasi Foto | ✅ | ✅ |
+| Riwayat Kondisi | ✅ | ✅ |
+| Export Laporan | ✅ | ✅ |
+| CRUD User | ✅ | ❌ |
+| Trash / Restore | ✅ | ❌ |
+| Hapus Permanen | ✅ | ❌ |
 
 ## Daftar Fitur
 fitur yang berhasil dibuat:
@@ -51,6 +81,24 @@ fitur yang berhasil dibuat:
 * Pengurutan data terbaru tampil paling atas (`latest`).
 * Soft Deletes untuk menjaga riwayat data.
 * Tombol reset pencarian.
+
+### Fitur Tambahan baru
+* Login dan Logout menggunakan username dan password, dengan 2 role Admin dan Petugas.
+* CRUD User khusus Admin, password di-hash, admin tidak bisa menghapus akun sendiri.
+* Pemetaan lokasi jalan menggunakan Leaflet dan OpenStreetMap, klik peta untuk menentukan koordinat, marker berwarna sesuai kondisi jalan.
+* Dokumentasi foto jalan, upload dan hapus foto di halaman detail jalan, validasi file gambar maksimal 2MB.
+* Dashboard statistik dan grafik kondisi jalan (doughnut) serta jenis permukaan (bar) menggunakan Chart.js, dilengkapi filter wilayah.
+* Riwayat kondisi jalan, mencatat histori survei jalan dengan timeline di halaman detail, tanggal survei tidak boleh di masa depan.
+* Trash, Restore, dan Hapus Permanen, data yang dihapus masuk ke sampah, bisa dipulihkan atau dihapus permanen beserta file foto.
+* Export laporan ke PDF dan Excel menggunakan DomPDF dan Maatwebsite Excel, laporan mengikuti filter yang sedang aktif.
+* Filter dan Sorting lanjutan, filter bertingkat kecamatan ke kelurahan, rentang panjang jalan, tahun pendataan, dan sorting multi-kolom.
+* Validasi data lengkap di backend dengan pesan error dalam Bahasa yang mudah di mengerti.
+
+## Cara Menjalankan Pengujian
+buka terminal ketik:
+```bash
+php artisan test
+```
 
 ## fitur yang belum selesai:
 * tidak ada
