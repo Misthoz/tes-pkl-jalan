@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -46,6 +45,14 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user)
     {
         $data = $request->validated();
+
+        if ($user->id === auth()->id() && $data['role'] !== $user->role) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'role' => 'Anda tidak dapat mengubah role akun Anda sendiri saat sedang login menggunakan akun tersebut. Minta admin lain untuk melakukan perubahan ini.',
+                ]);
+        }
 
         if ($data['role'] !== 'Admin' && $this->isLastAdmin($user)) {
             return back()
